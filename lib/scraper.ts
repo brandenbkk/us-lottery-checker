@@ -3,11 +3,11 @@ import * as cheerio from 'cheerio';
 import { DrawResult } from './types';
 
 /**
- * Powerball 당첨 번호 크롤링
+ * Powerball winning numbers scraping
  */
 export async function scrapePowerball(): Promise<DrawResult | null> {
   try {
-    // Powerball의 가장 최근 추첨 정보 가져오기
+    // Get latest Powerball draw information
     const response = await axios.get('https://www.powerball.com/api/v1/numbers/powerball/recent', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -15,7 +15,7 @@ export async function scrapePowerball(): Promise<DrawResult | null> {
       timeout: 10000,
     });
 
-    // API 응답이 있는 경우
+    // If API response exists
     if (response.data && response.data.length > 0) {
       const latest = response.data[0];
       
@@ -25,26 +25,26 @@ export async function scrapePowerball(): Promise<DrawResult | null> {
         drawDate: latest.field_draw_date,
         mainNumbers: latest.field_winning_numbers?.split(' ').map(Number).slice(0, 5) || [],
         bonusNumbers: [parseInt(latest.field_power_ball) || 0],
-        prizes: [], // 당첨 금액은 gameData.ts에서 가져옴
+        prizes: [], // Prize amounts from gameData.ts
       };
     }
 
     return null;
   } catch (error) {
-    console.error('Powerball 크롤링 에러:', error);
+    console.error('Powerball scraping error:', error);
     
-    // API 실패 시 HTML 파싱 시도
+    // Try HTML parsing if API fails
     try {
       return await scrapePowerballFromHTML();
     } catch (htmlError) {
-      console.error('Powerball HTML 파싱 에러:', htmlError);
+      console.error('Powerball HTML parsing error:', htmlError);
       return null;
     }
   }
 }
 
 /**
- * Powerball HTML 페이지에서 직접 파싱 (백업 방법)
+ * Powerball HTML page parsing (backup method)
  */
 async function scrapePowerballFromHTML(): Promise<DrawResult | null> {
   const response = await axios.get('https://www.powerball.com/previous-results', {
@@ -56,8 +56,8 @@ async function scrapePowerballFromHTML(): Promise<DrawResult | null> {
 
   const $ = cheerio.load(response.data);
   
-  // 가장 최근 결과 찾기 (HTML 구조에 따라 조정 필요)
-  // 예시: 첫 번째 결과 카드에서 정보 추출
+  // Find latest result (adjust based on HTML structure)
+  // Example: extract info from first result card
   const drawDateText = $('.item-date').first().text().trim();
   const numberElements = $('.item-powerball .numbers .ball').first().find('span');
   
@@ -88,11 +88,89 @@ async function scrapePowerballFromHTML(): Promise<DrawResult | null> {
 }
 
 /**
- * Mega Millions 당첨 번호 크롤링
+ * Mega Millions winning numbers scraping
  */
 export async function scrapeMegaMillions(): Promise<DrawResult | null> {
   try {
-    // Mega Millions API 시도
+    // Try HTML parsing first (more reliable)
+    const response = await axios.get('https://www.megamillions.com/Winning-Numbers/Previous-Drawings.aspx', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+      timeout: 15000,
+    });
+
+    const $ = cheerio.load(response.data);
+    
+    // Find the latest draw result
+    // Try multiple selectors to find numbers
+    let mainNumbers: number[] = [];
+    let bonusNumbers: number[] = [];
+    let drawDate = '';
+
+    // Method 1: Look for balls in the first result row
+    const firstRow = $('.pastResult').first();
+    if (firstRow.length > 0) {
+      drawDate = firstRow.find('.date').text().trim();
+      
+      firstRow.find('.ball').each((i, elem) => {
+        const num = parseInt($(elem).text().trim());
+        if (!isNaN(num)) {
+          if (mainNumbers.length < 5) {
+            mainNumbers.push(num);
+          } else if (bonusNumbers.length < 1) {
+            bonusNumbers.push(num);
+          }
+        }
+      });
+    }
+
+    // Method 2: Alternative selector
+    if (mainNumbers.length === 0) {
+      $('.winning-numbers-item, .winningNumber').each((i, elem) => {
+        const num = parseInt($(elem).text().trim());
+        if (!isNaN(num)) {
+          if (mainNumbers.length < 5) {
+            mainNumbers.push(num);
+          } else if (bonusNumbers.length < 1) {
+            bonusNumbers.push(num);
+          }
+        }
+      });
+    }
+
+    if (mainNumbers.length === 5 && bonusNumbers.length === 1) {
+      return {
+        id: `megamillions-${drawDate || new Date().toISOString().split('T')[0]}`,
+        gameId: 'megamillions',
+        drawDate: drawDate || new Date().toISOString().split('T')[0],
+        mainNumbers,
+        bonusNumbers,
+        prizes: [],
+      };
+    }
+
+    // If HTML parsing failed, try the API
+    return await scrapeMegaMillionsFromAPI();
+  } catch (error) {
+    console.error('Mega Millions scraping error:', error);
+    
+    // Final fallback: try API
+    try {
+      return await scrapeMegaMillionsFromAPI();
+    } catch (apiError) {
+      console.error('Mega Millions API error:', apiError);
+      return null;
+    }
+  }
+}
+
+/**
+ * Mega Millions API fallback
+ */
+async function scrapeMegaMillionsFromAPI(): Promise<DrawResult | null> {
+  try {
     const response = await axios.get('https://www.megamillions.com/cmspages/utilservice.asmx/GetLatestDrawData', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -116,65 +194,13 @@ export async function scrapeMegaMillions(): Promise<DrawResult | null> {
 
     return null;
   } catch (error) {
-    console.error('Mega Millions 크롤링 에러:', error);
-    
-    // API 실패 시 HTML 파싱 시도
-    try {
-      return await scrapeMegaMillionsFromHTML();
-    } catch (htmlError) {
-      console.error('Mega Millions HTML 파싱 에러:', htmlError);
-      return null;
-    }
+    console.error('Mega Millions API fallback failed:', error);
+    return null;
   }
 }
 
 /**
- * Mega Millions HTML 페이지에서 직접 파싱 (백업 방법)
- */
-async function scrapeMegaMillionsFromHTML(): Promise<DrawResult | null> {
-  const response = await axios.get('https://www.megamillions.com/winning-numbers.aspx', {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    },
-    timeout: 10000,
-  });
-
-  const $ = cheerio.load(response.data);
-  
-  // HTML 구조에 따라 당첨 번호 추출
-  const drawDateText = $('.draw-date').first().text().trim();
-  const numberElements = $('.winning-numbers-item');
-  
-  const mainNumbers: number[] = [];
-  const bonusNumbers: number[] = [];
-  
-  numberElements.each((i, elem) => {
-    const num = parseInt($(elem).text().trim());
-    if (!isNaN(num)) {
-      if (i < 5) {
-        mainNumbers.push(num);
-      } else {
-        bonusNumbers.push(num);
-      }
-    }
-  });
-
-  if (mainNumbers.length > 0) {
-    return {
-      id: `megamillions-${drawDateText}`,
-      gameId: 'megamillions',
-      drawDate: drawDateText,
-      mainNumbers,
-      bonusNumbers,
-      prizes: [],
-    };
-  }
-
-  return null;
-}
-
-/**
- * 게임 ID에 따라 적절한 크롤러 호출
+ * Call appropriate scraper based on game ID
  */
 export async function scrapeDrawResults(gameId: string): Promise<DrawResult | null> {
   switch (gameId) {
@@ -183,7 +209,7 @@ export async function scrapeDrawResults(gameId: string): Promise<DrawResult | nu
     case 'megamillions':
       return await scrapeMegaMillions();
     default:
-      throw new Error(`지원하지 않는 게임: ${gameId}`);
+      throw new Error(`Unsupported game: ${gameId}`);
   }
 }
 

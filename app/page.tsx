@@ -61,7 +61,13 @@ export default function Home() {
     }
   };
 
-  const handleReset = () => {
+  const handleReset = (fullReset: boolean) => {
+    if (fullReset) {
+      // Complete reset - back to game selection
+      setSelectedGameId('');
+      setSelectedGame(null);
+    }
+    // Hide results and allow editing
     setShowResults(false);
     setCheckResults([]);
     setDrawResult(null);
@@ -96,21 +102,8 @@ export default function Home() {
                   disabled={isChecking}
                 >
                   <option value="">Choose a game...</option>
-                  <optgroup label="National Games">
-                    <option value="powerball">Powerball</option>
-                    <option value="megamillions">Mega Millions</option>
-                  </optgroup>
-                  <optgroup label="State Games (Coming Soon)">
-                    <option value="" disabled>
-                      New Jersey (Coming Soon)
-                    </option>
-                    <option value="" disabled>
-                      New York (Coming Soon)
-                    </option>
-                    <option value="" disabled>
-                      California (Coming Soon)
-                    </option>
-                  </optgroup>
+                  <option value="powerball">Powerball</option>
+                  <option value="megamillions">Mega Millions</option>
                 </select>
               </div>
 

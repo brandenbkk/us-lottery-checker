@@ -110,6 +110,9 @@ export default function TicketInput({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Main Numbers (1-{game.mainNumberMax}) <span className="text-red-500">*</span>
         </label>
+        <p className="text-xs text-gray-500 mb-2">
+          Please type your numbers below (one number per box)
+        </p>
         <div className="grid grid-cols-5 gap-2">
           {mainNumbers.map((number, index) => (
             <input
@@ -132,6 +135,9 @@ export default function TicketInput({
           {game.bonusNumberName} (1-{game.bonusNumberMax}){' '}
           <span className="text-red-500">*</span>
         </label>
+        <p className="text-xs text-gray-500 mb-2">
+          Please type your {game.bonusNumberName} number
+        </p>
         <div className="grid grid-cols-5 gap-2">
           {bonusNumbers.map((number, index) => (
             <input

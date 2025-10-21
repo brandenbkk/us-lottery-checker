@@ -8,7 +8,7 @@ interface ResultsDisplayProps {
   drawResult: DrawResult;
   results: CheckResult[];
   game: LotteryGame;
-  onReset: () => void;
+  onReset: (fullReset: boolean) => void;
 }
 
 export default function ResultsDisplay({
@@ -159,21 +159,32 @@ export default function ResultsDisplay({
         </p>
       </div>
 
-      {/* Official Site Links */}
-      <div className="flex gap-3">
+      {/* Action Buttons */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Official Website Button */}
         <a
           href={game.officialWebsite}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center transition-colors"
+          className="py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center transition-colors"
         >
           🔗 Verify on Official Site
         </a>
+        
+        {/* Edit Numbers Button */}
         <button
-          onClick={onReset}
-          className="flex-1 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+          onClick={() => onReset(false)}
+          className="py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
         >
-          🔄 Check Again
+          ✏️ Edit Numbers
+        </button>
+        
+        {/* Start Over Button */}
+        <button
+          onClick={() => onReset(true)}
+          className="py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+        >
+          🔄 Start Over
         </button>
       </div>
 

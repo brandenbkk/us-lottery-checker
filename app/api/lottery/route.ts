@@ -3,19 +3,19 @@ import { scrapeDrawResults, scrapeAllGames } from '@/lib/scraper';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-// 데이터 캐시 디렉토리
+// Data cache directory
 const CACHE_DIR = path.join(process.cwd(), 'data', 'cache');
-const CACHE_DURATION = 1000 * 60 * 60; // 1시간 (밀리초)
+const CACHE_DURATION = 1000 * 60 * 60; // 1 hour (milliseconds)
 
 /**
- * 캐시 파일 경로 가져오기
+ * Get cache file path
  */
 function getCacheFilePath(gameId: string): string {
   return path.join(CACHE_DIR, `${gameId}.json`);
 }
 
 /**
- * 캐시된 데이터 읽기
+ * Read cached data
  */
 async function readCache(gameId: string) {
   try {
@@ -23,7 +23,7 @@ async function readCache(gameId: string) {
     const data = await fs.readFile(filePath, 'utf-8');
     const cached = JSON.parse(data);
 
-    // 캐시가 유효한지 확인 (1시간 이내)
+    // Check if cache is valid (within 1 hour)
     const now = Date.now();
     if (now - cached.timestamp < CACHE_DURATION) {
       return cached.data;
@@ -31,17 +31,17 @@ async function readCache(gameId: string) {
 
     return null;
   } catch (error) {
-    // 캐시 파일이 없거나 읽기 실패
+    // Cache file not found or read failed
     return null;
   }
 }
 
 /**
- * 캐시에 데이터 쓰기
+ * Write data to cache
  */
 async function writeCache(gameId: string, data: any) {
   try {
-    // 캐시 디렉토리 생성
+    // Create cache directory
     await fs.mkdir(CACHE_DIR, { recursive: true });
 
     const filePath = getCacheFilePath(gameId);
@@ -52,22 +52,22 @@ async function writeCache(gameId: string, data: any) {
 
     await fs.writeFile(filePath, JSON.stringify(cacheData, null, 2));
   } catch (error) {
-    console.error('캐시 쓰기 에러:', error);
+    console.error('Cache write error:', error);
   }
 }
 
 /**
  * GET /api/lottery?game=powerball
- * GET /api/lottery (모든 게임)
+ * GET /api/lottery (all games)
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const gameId = searchParams.get('game');
 
-    // 특정 게임 조회
+    // Query specific game
     if (gameId) {
-      // 캐시 확인
+      // Check cache
       let cachedData = await readCache(gameId);
       
       if (cachedData) {
@@ -78,11 +78,11 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      // 캐시가 없으면 크롤링
+      // Scrape if no cache
       const result = await scrapeDrawResults(gameId);
 
       if (result) {
-        // 캐시에 저장
+        // Save to cache
         await writeCache(gameId, result);
 
         return NextResponse.json({
@@ -93,15 +93,15 @@ export async function GET(request: NextRequest) {
       } else {
         return NextResponse.json({
           success: false,
-          error: '당첨 번호를 가져올 수 없습니다.',
+          error: 'Unable to fetch winning numbers.',
         }, { status: 404 });
       }
     }
 
-    // 모든 게임 조회
+    // Query all games
     const allGames = await scrapeAllGames();
 
-    // 캐시에 저장
+    // Save to cache
     for (const [gameId, result] of Object.entries(allGames)) {
       if (result) {
         await writeCache(gameId, result);
@@ -115,10 +115,10 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('API 에러:', error);
+    console.error('API error:', error);
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.',
+      error: error instanceof Error ? error.message : 'An unknown error occurred.',
     }, { status: 500 });
   }
 }
