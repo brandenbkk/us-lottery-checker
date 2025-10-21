@@ -86,7 +86,7 @@ export function formatPrizeAmount(amount: number): string {
 }
 
 /**
- * 당첨 등급 이름 가져오기
+ * Get prize tier name
  */
 export function getPrizeTierName(
   mainMatches: number,
@@ -96,14 +96,14 @@ export function getPrizeTierName(
   if (mainMatches === 5 && bonusMatches === 1) {
     return 'JACKPOT! 🎉🎉🎉';
   } else if (mainMatches === 5 && bonusMatches === 0) {
-    return '2등! 🎉🎉';
+    return '2nd Prize! 🎉🎉';
   } else if (mainMatches === 4 && bonusMatches === 1) {
-    return '3등! 🎉';
+    return '3rd Prize! 🎉';
   } else if (mainMatches >= 3) {
-    return `당첨! 🎊`;
+    return `Winner! 🎊`;
   } else if (mainMatches > 0 || bonusMatches > 0) {
-    return '소액 당첨 💵';
+    return 'Small Prize 💵';
   } else {
-    return '낙첨 😢';
+    return 'No Match 😢';
   }
 }

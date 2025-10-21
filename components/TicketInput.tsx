@@ -75,40 +75,40 @@ export default function TicketInput({
 
   return (
     <div className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm">
-      {/* 헤더 */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-gray-800">
-          티켓 #{ticketNumber}
+          Ticket #{ticketNumber}
         </h3>
         {canRemove && (
           <button
             onClick={onRemove}
             className="text-red-500 hover:text-red-700 font-medium text-sm"
           >
-            ✕ 삭제
+            ✕ Remove
           </button>
         )}
       </div>
 
-      {/* 구매 날짜 */}
+      {/* Purchase Date */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          구매 날짜 <span className="text-red-500">*</span>
+          Purchase Date <span className="text-red-500">*</span>
         </label>
         <DatePicker
           selected={purchaseDate}
           onChange={(date) => setPurchaseDate(date)}
           dateFormat="yyyy-MM-dd"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholderText="날짜를 선택하세요"
+          placeholderText="Select date"
           maxDate={new Date()}
         />
       </div>
 
-      {/* 메인 번호 입력 */}
+      {/* Main Numbers Input */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          메인 번호 (1-{game.mainNumberMax}) <span className="text-red-500">*</span>
+          Main Numbers (1-{game.mainNumberMax}) <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-5 gap-2">
           {mainNumbers.map((number, index) => (
@@ -126,7 +126,7 @@ export default function TicketInput({
         </div>
       </div>
 
-      {/* 보너스 번호 입력 */}
+      {/* Bonus Numbers Input */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {game.bonusNumberName} (1-{game.bonusNumberMax}){' '}
@@ -148,10 +148,10 @@ export default function TicketInput({
         </div>
       </div>
 
-      {/* 힌트 텍스트 */}
+      {/* Hint Text */}
       <p className="text-xs text-gray-500 mt-3">
-        💡 팁: {game.name}은 {game.mainNumberCount}개의 메인 번호와 1개의{' '}
-        {game.bonusNumberName}을 선택합니다.
+        💡 Tip: {game.name} requires {game.mainNumberCount} main numbers and 1{' '}
+        {game.bonusNumberName}.
       </p>
     </div>
   );

@@ -25,17 +25,17 @@ export default function ResultsDisplay({
 
   return (
     <div className="space-y-6">
-      {/* 당첨 번호 표시 */}
+      {/* Winning Numbers Display */}
       <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6">
         <h2 className="text-2xl font-bold text-blue-900 mb-4 text-center">
-          🎰 당첨 번호
+          🎰 Winning Numbers
         </h2>
         <div className="text-center">
           <p className="text-sm text-blue-700 mb-2">
-            추첨일: {drawResult.drawDate}
+            Draw Date: {drawResult.drawDate}
           </p>
           <div className="flex justify-center items-center gap-2 flex-wrap">
-            {/* 메인 번호 */}
+            {/* Main Numbers */}
             {drawResult.mainNumbers.map((num, i) => (
               <div
                 key={i}
@@ -44,7 +44,7 @@ export default function ResultsDisplay({
                 {num}
               </div>
             ))}
-            {/* 보너스 번호 */}
+            {/* Bonus Numbers */}
             {drawResult.bonusNumbers.map((num, i) => (
               <div
                 key={`bonus-${i}`}
@@ -57,17 +57,17 @@ export default function ResultsDisplay({
         </div>
       </div>
 
-      {/* 전체 요약 */}
+      {/* Overall Summary */}
       <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
         <div className="grid grid-cols-2 gap-4 text-center">
           <div>
-            <p className="text-sm text-gray-600">당첨 티켓</p>
+            <p className="text-sm text-gray-600">Winning Tickets</p>
             <p className="text-3xl font-bold text-purple-600">
               {winnersCount}/{results.length}
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">총 당첨금 (평균)</p>
+            <p className="text-sm text-gray-600">Total Winnings (Est.)</p>
             <p className="text-3xl font-bold text-pink-600">
               {formatPrizeAmount(totalWinnings)}
             </p>
@@ -75,9 +75,9 @@ export default function ResultsDisplay({
         </div>
       </div>
 
-      {/* 각 티켓별 결과 */}
+      {/* Individual Ticket Results */}
       <div className="space-y-4">
-        <h3 className="text-xl font-bold text-gray-800">티켓별 결과</h3>
+        <h3 className="text-xl font-bold text-gray-800">Results by Ticket</h3>
         {results.map((result, index) => (
           <div
             key={result.ticketId}
@@ -89,16 +89,16 @@ export default function ResultsDisplay({
           >
             <div className="flex justify-between items-start mb-3">
               <h4 className="font-semibold text-lg">
-                티켓 #{index + 1}
+                Ticket #{index + 1}
               </h4>
               <span className="text-2xl">
                 {result.isWinner ? '🎉' : '😢'}
               </span>
             </div>
 
-            {/* 일치 번호 */}
+            {/* Matched Numbers */}
             <div className="mb-3">
-              <p className="text-sm text-gray-600 mb-2">일치한 번호:</p>
+              <p className="text-sm text-gray-600 mb-2">Matched Numbers:</p>
               <div className="flex gap-2 flex-wrap">
                 {result.matchedMainNumbers.length > 0 ? (
                   result.matchedMainNumbers.map((num, i) => (
@@ -110,7 +110,7 @@ export default function ResultsDisplay({
                     </span>
                   ))
                 ) : (
-                  <span className="text-gray-400 text-sm">없음</span>
+                  <span className="text-gray-400 text-sm">None</span>
                 )}
                 {result.matchedBonusNumbers.length > 0 &&
                   result.matchedBonusNumbers.map((num, i) => (
@@ -124,7 +124,7 @@ export default function ResultsDisplay({
               </div>
             </div>
 
-            {/* 당첨 결과 */}
+            {/* Prize Result */}
             <div
               className={`p-3 rounded-lg ${
                 result.isWinner ? 'bg-green-100' : 'bg-gray-100'
@@ -138,12 +138,12 @@ export default function ResultsDisplay({
                 )}
               </p>
               <p className="text-sm text-gray-600">
-                메인: {result.totalMainMatches}개 일치 | 보너스:{' '}
-                {result.totalBonusMatches}개 일치
+                Main: {result.totalMainMatches} match | Bonus:{' '}
+                {result.totalBonusMatches} match
               </p>
               {result.prize && (
                 <p className="text-xl font-bold text-green-700 mt-2">
-                  예상 당첨금: {formatPrizeAmount(result.prize.amount)}
+                  Est. Prize: {formatPrizeAmount(result.prize.amount)}
                 </p>
               )}
             </div>
@@ -151,16 +151,15 @@ export default function ResultsDisplay({
         ))}
       </div>
 
-      {/* 안내 문구 */}
+      {/* Disclaimer */}
       <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4">
         <p className="text-sm text-yellow-800">
-          ⚠️ <strong>중요:</strong> 표시된 당첨금은 평균 고정 금액입니다. 실제
-          당첨금은 변동될 수 있으므로 정확한 금액은 아래 공식 웹사이트에서
-          확인하세요.
+          ⚠️ <strong>Important:</strong> Prize amounts shown are estimated averages. 
+          Actual prizes may vary. Please verify exact amounts on the official website below.
         </p>
       </div>
 
-      {/* 공식 사이트 링크 */}
+      {/* Official Site Links */}
       <div className="flex gap-3">
         <a
           href={game.officialWebsite}
@@ -168,20 +167,20 @@ export default function ResultsDisplay({
           rel="noopener noreferrer"
           className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center transition-colors"
         >
-          🔗 공식 사이트에서 확인하기
+          🔗 Verify on Official Site
         </a>
         <button
           onClick={onReset}
           className="flex-1 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"
         >
-          🔄 다시 확인하기
+          🔄 Check Again
         </button>
       </div>
 
       {/* Buy Me a Coffee */}
       <div className="text-center pt-4 border-t border-gray-200">
         <p className="text-sm text-gray-600 mb-3">
-          이 서비스가 도움이 되셨나요?
+          Did this tool help you?
         </p>
         <a
           href="https://www.buymeacoffee.com"

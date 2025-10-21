@@ -50,28 +50,28 @@ export default function TicketForm({ game, onSubmit }: TicketFormProps) {
 
   const validateTickets = (): boolean => {
     for (const ticket of tickets) {
-      // 날짜 체크
+      // Date check
       if (!ticket.purchaseDate) {
-        alert('모든 티켓의 구매 날짜를 입력해주세요.');
+        alert('Please enter purchase date for all tickets.');
         return false;
       }
 
-      // 메인 번호 개수 체크
+      // Main numbers count check
       if (ticket.mainNumbers.length !== game.mainNumberCount) {
-        alert(`메인 번호를 ${game.mainNumberCount}개 모두 입력해주세요.`);
+        alert(`Please enter all ${game.mainNumberCount} main numbers.`);
         return false;
       }
 
-      // 메인 번호 중복 체크
+      // Main numbers duplicate check
       const uniqueMainNumbers = new Set(ticket.mainNumbers);
       if (uniqueMainNumbers.size !== ticket.mainNumbers.length) {
-        alert('메인 번호에 중복된 숫자가 있습니다.');
+        alert('Duplicate numbers found in main numbers.');
         return false;
       }
 
-      // 보너스 번호 개수 체크
+      // Bonus numbers count check
       if (ticket.bonusNumbers.length !== game.bonusNumberCount) {
-        alert(`${game.bonusNumberName}을 입력해주세요.`);
+        alert(`Please enter the ${game.bonusNumberName}.`);
         return false;
       }
     }
@@ -87,7 +87,7 @@ export default function TicketForm({ game, onSubmit }: TicketFormProps) {
 
   return (
     <div className="space-y-6">
-      {/* 티켓 목록 */}
+      {/* Ticket List */}
       {tickets.map((ticket, index) => (
         <TicketInput
           key={ticket.id}
@@ -99,29 +99,29 @@ export default function TicketForm({ game, onSubmit }: TicketFormProps) {
         />
       ))}
 
-      {/* 티켓 추가 버튼 */}
+      {/* Add Ticket Button */}
       {tickets.length < 10 && (
         <button
           onClick={handleAddTicket}
           className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-500 font-medium transition-colors"
         >
-          + 티켓 추가 ({tickets.length}/10)
+          + Add Ticket ({tickets.length}/10)
         </button>
       )}
 
-      {/* 제출 버튼 */}
+      {/* Submit Button */}
       <button
         onClick={handleSubmit}
         className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all text-lg"
       >
-        🎰 당첨 확인하기
+        🎰 Check My Numbers
       </button>
 
-      {/* 안내 문구 */}
+      {/* Disclaimer */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <p className="text-sm text-yellow-800">
-          ⚠️ <strong>알림:</strong> 이 도구는 당첨 확인 보조 도구입니다. 정확한
-          당첨 확인은 공식 판매처에서 하시기 바랍니다.
+          ⚠️ <strong>Notice:</strong> This is an informational tool. Always verify
+          your winnings with official lottery sources.
         </p>
       </div>
     </div>

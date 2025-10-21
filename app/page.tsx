@@ -51,11 +51,11 @@ export default function Home() {
         setCheckResults(data.data.results);
         setShowResults(true);
       } else {
-        alert(`오류: ${data.error}`);
+        alert(`Error: ${data.error}`);
       }
     } catch (error) {
-      console.error('당첨 확인 에러:', error);
-      alert('당첨 확인 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
+      console.error('Check error:', error);
+      alert('An error occurred while checking your numbers. Please try again later.');
     } finally {
       setIsChecking(false);
     }
@@ -87,7 +87,7 @@ export default function Home() {
               {/* Game Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  게임 선택 <span className="text-red-500">*</span>
+                  Select Game <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={selectedGameId}
@@ -95,20 +95,20 @@ export default function Home() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isChecking}
                 >
-                  <option value="">게임을 선택하세요...</option>
-                  <optgroup label="전국 게임">
+                  <option value="">Choose a game...</option>
+                  <optgroup label="National Games">
                     <option value="powerball">Powerball</option>
                     <option value="megamillions">Mega Millions</option>
                   </optgroup>
-                  <optgroup label="주별 게임 (준비중)">
+                  <optgroup label="State Games (Coming Soon)">
                     <option value="" disabled>
-                      New Jersey (곧 추가)
+                      New Jersey (Coming Soon)
                     </option>
                     <option value="" disabled>
-                      New York (곧 추가)
+                      New York (Coming Soon)
                     </option>
                     <option value="" disabled>
-                      California (곧 추가)
+                      California (Coming Soon)
                     </option>
                   </optgroup>
                 </select>
@@ -122,22 +122,22 @@ export default function Home() {
                   </h3>
                   <div className="text-sm text-blue-700 space-y-1">
                     <p>
-                      📊 {selectedGame.mainNumberCount}개 메인 번호 (1-
+                      📊 {selectedGame.mainNumberCount} main numbers (1-
                       {selectedGame.mainNumberMax})
                     </p>
                     <p>
-                      ⭐ {selectedGame.bonusNumberCount}개{' '}
+                      ⭐ {selectedGame.bonusNumberCount}{' '}
                       {selectedGame.bonusNumberName} (1-
                       {selectedGame.bonusNumberMax})
                     </p>
-                    <p>📅 추첨일: {selectedGame.drawDays.join(', ')}</p>
+                    <p>📅 Draw Days: {selectedGame.drawDays.join(', ')}</p>
                     <a
                       href={selectedGame.officialWebsite}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline inline-block mt-1"
                     >
-                      🔗 공식 웹사이트 →
+                      🔗 Official Website →
                     </a>
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export default function Home() {
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
                     <p className="text-blue-800 font-medium">
-                      당첨 번호를 확인하고 있습니다...
+                      Checking your numbers...
                     </p>
                   </div>
                 ) : (
@@ -157,7 +157,7 @@ export default function Home() {
                 )
               ) : (
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                  <p className="text-gray-600">👆 먼저 게임을 선택해주세요</p>
+                  <p className="text-gray-600">👆 Please select a game first</p>
                 </div>
               )}
             </div>
