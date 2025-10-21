@@ -10,6 +10,7 @@ interface TicketInputProps {
   onRemove: () => void;
   canRemove: boolean;
   onTicketChange: (ticketData: TicketData) => void;
+  initialData?: TicketData;
 }
 
 export interface TicketData {
@@ -26,14 +27,35 @@ export default function TicketInput({
   onRemove,
   canRemove,
   onTicketChange,
+  initialData,
 }: TicketInputProps) {
-  const [purchaseDate, setPurchaseDate] = useState<Date | null>(null);
-  const [mainNumbers, setMainNumbers] = useState<string[]>(
-    Array(game.mainNumberCount).fill('')
+  const [purchaseDate, setPurchaseDate] = useState<Date | null>(
+    initialData?.purchaseDate || null
   );
-  const [bonusNumbers, setBonusNumbers] = useState<string[]>(
-    Array(game.bonusNumberCount).fill('')
-  );
+  const [mainNumbers, setMainNumbers] = useState<string[]>(() => {
+    if (initialData && initialData.mainNumbers.length > 0) {
+      // Convert existing numbers to strings for display
+      const numbers = initialData.mainNumbers.map(n => n.toString());
+      // Fill remaining slots with empty strings
+      while (numbers.length < game.mainNumberCount) {
+        numbers.push('');
+      }
+      return numbers;
+    }
+    return Array(game.mainNumberCount).fill('');
+  });
+  const [bonusNumbers, setBonusNumbers] = useState<string[]>(() => {
+    if (initialData && initialData.bonusNumbers.length > 0) {
+      // Convert existing numbers to strings for display
+      const numbers = initialData.bonusNumbers.map(n => n.toString());
+      // Fill remaining slots with empty strings
+      while (numbers.length < game.bonusNumberCount) {
+        numbers.push('');
+      }
+      return numbers;
+    }
+    return Array(game.bonusNumberCount).fill('');
+  });
 
   // 티켓 데이터가 변경될 때마다 부모 컴포넌트에 전달
   React.useEffect(() => {

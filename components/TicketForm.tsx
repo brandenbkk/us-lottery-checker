@@ -7,18 +7,25 @@ import { LotteryGame } from '@/lib/types';
 interface TicketFormProps {
   game: LotteryGame;
   onSubmit: (tickets: TicketData[]) => void;
+  initialTickets?: TicketData[];
 }
 
-export default function TicketForm({ game, onSubmit }: TicketFormProps) {
-  const [tickets, setTickets] = useState<TicketData[]>([
-    {
-      id: 'ticket-1',
-      gameId: game.id,
-      purchaseDate: null,
-      mainNumbers: [],
-      bonusNumbers: [],
-    },
-  ]);
+export default function TicketForm({ game, onSubmit, initialTickets }: TicketFormProps) {
+  const [tickets, setTickets] = useState<TicketData[]>(() => {
+    // Use initialTickets if provided and valid, otherwise create new ticket
+    if (initialTickets && initialTickets.length > 0) {
+      return initialTickets;
+    }
+    return [
+      {
+        id: 'ticket-1',
+        gameId: game.id,
+        purchaseDate: null,
+        mainNumbers: [],
+        bonusNumbers: [],
+      },
+    ];
+  });
 
   const handleAddTicket = () => {
     if (tickets.length < 10) {
@@ -96,6 +103,7 @@ export default function TicketForm({ game, onSubmit }: TicketFormProps) {
           onRemove={() => handleRemoveTicket(index)}
           canRemove={tickets.length > 1}
           onTicketChange={(data) => handleTicketChange(index, data)}
+          initialData={ticket}
         />
       ))}
 

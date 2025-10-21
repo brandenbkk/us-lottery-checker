@@ -10,6 +10,7 @@ import { LotteryGame, CheckResult, DrawResult } from '@/lib/types';
 export default function Home() {
   const [selectedGameId, setSelectedGameId] = useState<string>('');
   const [selectedGame, setSelectedGame] = useState<LotteryGame | null>(null);
+  const [tickets, setTickets] = useState<TicketData[]>([]);
   const [isChecking, setIsChecking] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [checkResults, setCheckResults] = useState<CheckResult[]>([]);
@@ -19,20 +20,33 @@ export default function Home() {
     setSelectedGameId(gameId);
     if (gameId && lotteryGames[gameId]) {
       setSelectedGame(lotteryGames[gameId]);
+      // Initialize tickets for new game
+      setTickets([
+        {
+          id: 'ticket-1',
+          gameId: gameId,
+          purchaseDate: null,
+          mainNumbers: [],
+          bonusNumbers: [],
+        },
+      ]);
     } else {
       setSelectedGame(null);
+      setTickets([]);
     }
-    // 게임 변경 시 결과 초기화
+    // Reset results when game changes
     setShowResults(false);
   };
 
-  const handleSubmit = async (tickets: TicketData[]) => {
+  const handleSubmit = async (submittedTickets: TicketData[]) => {
     if (!selectedGame) return;
 
+    // Save tickets to state
+    setTickets(submittedTickets);
     setIsChecking(true);
 
     try {
-      // API 호출
+      // API call
       const response = await fetch('/api/check', {
         method: 'POST',
         headers: {
@@ -40,7 +54,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           gameId: selectedGame.id,
-          tickets: tickets,
+          tickets: submittedTickets,
         }),
       });
 
@@ -66,7 +80,9 @@ export default function Home() {
       // Complete reset - back to game selection
       setSelectedGameId('');
       setSelectedGame(null);
+      setTickets([]);
     }
+    // If not full reset, keep tickets data
     // Hide results and allow editing
     setShowResults(false);
     setCheckResults([]);
@@ -146,7 +162,11 @@ export default function Home() {
                     </p>
                   </div>
                 ) : (
-                  <TicketForm game={selectedGame} onSubmit={handleSubmit} />
+                  <TicketForm 
+                    game={selectedGame} 
+                    onSubmit={handleSubmit}
+                    initialTickets={tickets}
+                  />
                 )
               ) : (
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
